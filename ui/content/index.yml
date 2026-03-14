@@ -1,0 +1,29 @@
+project:
+  name: sms sender
+  year: 2024
+  tagline: personal project
+
+description: |
+  a simple tool that lets me send sms messages to multiple people at once.
+  built because i needed a way to send quick updates to friends and family
+  without group chat chaos.
+
+  add phone numbers with country codes, type a message, and it shows you
+  how many sms segments it'll use (160 chars = 1 sms). handy for keeping
+  track of costs.
+
+features:
+  - multiple phone numbers with country codes
+  - character counter showing sms segments
+  - simple form focused on one task
+
+tech_stack:
+  - vue
+  - nuxt ui
+  - tailwind
+  - typescript
+
+links:
+  sender: /sms-sender
+
+footer: just a personal thing. works for what i need.
