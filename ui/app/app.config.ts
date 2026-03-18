@@ -7,7 +7,7 @@ export default defineAppConfig({
     image: "",
     icon: "",
     url: "",
-    sourceLink: "https://github.com/PlaceMeIn",
+    sourceLink: "https://github.com/",
     apiBase: ""
   },
   global: {
@@ -38,9 +38,9 @@ export default defineAppConfig({
     colorMode: false,
     links: [ {
       'icon': 'i-simple-icons-github',
-      'to': 'https://github.com/NicholasTecmoverai',
+      'to': 'https://github.com/NicholasTechmoverai',
       'target': '_blank',
-      'aria-label': 'Nuxt UI on GitHub'
+      'aria-label': 'Source on GitHub'
     }]
   }
 })
