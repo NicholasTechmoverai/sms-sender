@@ -18,7 +18,15 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   compatibilityDate: '2024-11-01',
-
+  // Components Configuration
+  components: {
+    global: true,
+    dirs: [
+      { path: '~/components/', pathPrefix: false },
+      { path: '~/components/users', pathPrefix: false },
+      { path: '~/components/sms', pathPrefix: false }
+    ]
+  },
   nitro: {
     prerender: {
       routes: [

@@ -4,6 +4,7 @@ export const useAuthStore = defineStore('app', {
   state: () => ({
     count: 0,
     ongoingSms:{},
+    ongoingSMS:{},
     history:[]
   }),
 

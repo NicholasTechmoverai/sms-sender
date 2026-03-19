@@ -1,11 +1,15 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi.middleware import SlowAPIMiddleware
+from contextlib import asynccontextmanager
+from tortoise import Tortoise
 
 
 from core.limiter import limiter
 from core.settings import settings
-
+from core.config import Config
+from core.logger import setup_logger
+logger = setup_logger(__name__)
 
 from api.router import api_router
 
@@ -32,5 +36,23 @@ app.state.limiter = limiter
 
 app.include_router(api_router, prefix="/api")
 
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("Initializing database...")
+    try:
+        await Config.init_db(app)
+        logger.info("Database connected successfully")
+    except Exception as e:
+        logger.error(f"Database connection failed: {e}", exc_info=True)
+
+    yield
+
+    logger.info("Closing database connections...")
+    await Tortoise.close_connections()
+    logger.info("Database closed")
+
+app.router.lifespan_context = lifespan
 
 # uvicorn app:app --reload
