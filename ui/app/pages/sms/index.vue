@@ -419,7 +419,7 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
                   icon="i-heroicons-users"
                   @click="$router.push('/sms/selector')"
                 >
-                  Filter Select
+                  Search Users
                 </UButton>
               </div>
             </div>
