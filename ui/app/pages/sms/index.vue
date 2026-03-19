@@ -709,12 +709,10 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
                 size="lg"
                 :loading="loading"
                 :disabled="!canSend"
-              >
-                <template #leading>
-                  <UIcon name="i-heroicons-paper-airplane" class="w-5 h-5" />
-                </template>
-                {{ loading ? "Sending..." : "Send Message" }}
-              </UButton>
+                icon="i-heroicons-paper-airplane"
+                :label="loading ? 'Sending...' : 'Send Message'"
+              />
+               
             </div>
 
             <!-- Cost estimate -->
