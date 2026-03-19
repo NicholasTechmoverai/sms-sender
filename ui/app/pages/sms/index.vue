@@ -29,6 +29,17 @@ const state = reactive({
   text: "",
 });
 
+
+watch(
+  () => state.text,
+  (val) => {
+    stateStore.message = val
+  }
+)
+
+onMounted(() => {
+  state.text = stateStore.message
+})
 const loading = ref(false);
 const balance = ref<BalanceResponse | null>(null);
 const toast = useToast();
