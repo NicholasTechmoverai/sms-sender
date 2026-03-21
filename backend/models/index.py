@@ -441,6 +441,24 @@ class PersonSearchEngine:
         scored_people.sort(key=lambda x: x[1], reverse=True)
         return [p[0] for p in scored_people[:limit]]
 
+class User(Model):
+    """User model for authentication"""
+    
+    id = fields.IntField(pk=True)
+    username = fields.CharField(max_length=50, unique=True, index=True)
+    email = fields.CharField(max_length=100, unique=True, index=True)
+    password_hash = fields.CharField(max_length=128)
+    is_active = fields.BooleanField(default=True)
+    is_admin = fields.BooleanField(default=False)
+    created_at = fields.DatetimeField(auto_now_add=True)
+    updated_at = fields.DatetimeField(auto_now=True)
+    
+    class Meta:
+        table = "users"
+    
+    def __str__(self):
+        return f"{self.username} ({self.email})"
+
 # # Create Pydantic models for API responses
 # Person_Pydantic = pydantic_model_creator(Person, name="Person")
 # PersonIn_Pydantic = pydantic_model_creator(Person, name="PersonIn", exclude_readonly=True)

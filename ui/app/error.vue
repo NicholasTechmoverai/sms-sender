@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { NuxtError } from '#app'
+import { useNavLinks } from '~/utils/links'
 
 defineProps({
   error: {
@@ -36,6 +37,8 @@ const [{ data: navigation }, { data: files }] = await Promise.all([
     transform: data => data.flat()
   })
 ])
+
+const { navLinks } = useNavLinks()
 </script>
 
 <template>

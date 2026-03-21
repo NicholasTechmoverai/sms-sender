@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request, HTTPException, Depends
 from core.limiter import limiter
 from core.logger import setup_logger
 from utils.open_sms_sender import send_sms as send_sms_service, get_sms_balance
 from schemas.sms import SMSRequest
+from api.endpoints.auth import get_current_active_user
 
 logger = setup_logger("sms")
 sms_router = APIRouter()
@@ -10,7 +11,7 @@ sms_router = APIRouter()
 
 @sms_router.get("/sms")
 @limiter.limit("10/minute")
-async def get_sms(request: Request, limit: str = 10, offset: str = 0, search: str = None):
+async def get_sms(request: Request, limit: str = 10, offset: str = 0, search: str = None, current_user = Depends(get_current_active_user)):
     try:
         logger.info("reading sms")
         return []
@@ -21,7 +22,7 @@ async def get_sms(request: Request, limit: str = 10, offset: str = 0, search: st
 
 @sms_router.post("/sms")
 @limiter.limit("10/minute")
-async def send_sms(request: Request, payload: SMSRequest):
+async def send_sms(request: Request, payload: SMSRequest, current_user = Depends(get_current_active_user)):
     try:
         res = await send_sms_service(
             recipient=",".join(payload.recipient),
@@ -40,7 +41,7 @@ async def send_sms(request: Request, payload: SMSRequest):
 
 @sms_router.get("/sms/balance")
 @limiter.limit("60/minute")
-async def get_sms_balance_endpoint(request: Request):
+async def get_sms_balance_endpoint(request: Request, current_user = Depends(get_current_active_user)):
     try:
         logger.info("reading sms balance")
         bal = await get_sms_balance()

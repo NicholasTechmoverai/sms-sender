@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     API_VERSION: str = "v1"
     ENVIRONMENT: str = "development"
 
-    SECRET_KEY: str = ""
+    SECRET_KEY: str = "your-secret-key-here-change-in-production"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
@@ -78,7 +78,7 @@ class Settings(BaseSettings):
     SMTP_SERVER: str = "localhost"
     SMTP_PORT: int = 587
 
-    DATABASE_URL: str | None = ""
+    DATABASE_URL: str = "sqlite://db.sqlite3"
     REDIS_URL: str | None ="redis://localhost:6379/0"
  
 

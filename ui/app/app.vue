@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useNavLinks } from '~/utils/links'
+
 const colorMode = useColorMode()
 
 const color = computed(() => colorMode.value === 'dark' ? '#020618' : 'white')
@@ -41,6 +43,7 @@ const [{ data: navigation }, { data: files }] = await Promise.all([
     transform: data => data.flat()
   })
 ])
+
 </script>
 
 <template>
@@ -56,7 +59,7 @@ const [{ data: navigation }, { data: files }] = await Promise.all([
         :files="files"
         :navigation="navigation"
         shortcut="meta_k"
-        :links="navLinks"
+        :links="useNavLinks()"
         :fuse="{ resultLimit: 42 }"
       />
     </ClientOnly>

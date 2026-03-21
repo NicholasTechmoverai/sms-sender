@@ -1,6 +1,12 @@
 <script setup lang="ts">
+import { definePageMeta } from '#imports'
 import type { FormError, FormSubmitEvent } from "@nuxt/ui";
 import { useAuthStore } from "../../stores/auth";
+
+definePageMeta({
+  middleware: 'auth'
+})
+
 const stateStore = useAuthStore();
 const openSelector = ref(false);
 const showManualInput = ref(false);
@@ -269,7 +275,7 @@ watch(() => stateStore.ongoingSMS?.phones, (newPhones) => {
 // Methods
 async function fetchBalance() {
   try {
-    const res = await get<BalanceResponse>(endpoints.sms.balance);
+    const res = await get<BalanceResponse>(endpoints.sms.balance, undefined, true);
     balance.value = res;
   } catch (error) {
     console.error("Failed to fetch balance:", error);
@@ -307,7 +313,7 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
   };
 
   try {
-    const res = await post(endpoints.sms.send, payload);
+    const res = await post(endpoints.sms.send, payload, true);
     if (res?.status?.error) {
       toast.add({
         title: "Failed to send SMS",

@@ -8,7 +8,7 @@ export default defineAppConfig({
     icon: "",
     url: "",
     sourceLink: "https://github.com/",
-    apiBase: ""
+    apiBase: "http://localhost:8000"
   },
   global: {
     picture: {
