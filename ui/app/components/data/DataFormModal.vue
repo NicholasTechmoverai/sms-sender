@@ -1,326 +1,209 @@
 <template>
-  <Teleport to="body">
-    <!-- Modal Backdrop -->
-    <div
-      class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4"
-      @click.self="close"
-    >
-      <!-- Modal Content -->
-      <div class="bg-white dark:bg-slate-900 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <!-- Header -->
-        <div class="sticky top-0 bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
-          <h2 class="text-xl font-bold text-gray-900 dark:text-white">
-            {{ person ? 'Edit Record' : 'Create New Record' }}
-          </h2>
-          <button
-            @click="close"
-            class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-          >
-            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
+  <UModal  scrollable v-model:open="isOpen">
+    <template #content>
+    <UCard class="max-w-3xl w-full">
+      <!-- Header -->
+      <template #header>
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-semibold">
+              {{ person ? 'Edit Record' : 'Create New Record' }}
+            </h2>
+            <p class="text-sm text-muted">Manage person details</p>
+          </div>
+
+          <UButton icon="i-lucide-x" variant="ghost" @click="close" />
+        </div>
+      </template>
+
+      <!-- Form -->
+      <UForm @submit="submitForm" class="space-y-6">
+
+        <!-- Personal -->
+        <div>
+          <h3 class="font-medium mb-3">Personal Information</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+            <UFormField label="Name" required>
+              <UInput v-model="form.name" />
+            </UFormField>
+
+            <UFormField label="Email" required>
+              <UInput v-model="form.email" type="email" />
+            </UFormField>
+
+            <UFormField label="Age">
+              <UInput v-model.number="form.age" type="number" />
+            </UFormField>
+
+            <UFormField label="Phone">
+              <UInput v-model="form.phone" />
+            </UFormField>
+
+          </div>
         </div>
 
-        <!-- Form -->
-        <form @submit.prevent="submitForm" class="p-6 space-y-6">
-          <!-- Personal Information Section -->
-          <div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Personal Information</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <!-- Name -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name *</label>
-                <input
-                  v-model="form.name"
-                  type="text"
-                  required
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+        <!-- Location -->
+        <div>
+          <h3 class="font-medium mb-3">Location</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-              <!-- Email -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email *</label>
-                <input
-                  v-model="form.email"
-                  type="email"
-                  required
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+            <UFormField label="Country" required>
+              <UInput v-model="form.country" />
+            </UFormField>
 
-              <!-- Age -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Age</label>
-                <input
-                  v-model.number="form.age"
-                  type="number"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+            <UFormField label="City" required>
+              <UInput v-model="form.city" />
+            </UFormField>
 
-              <!-- Phone -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
-                <input
-                  v-model="form.phone"
-                  type="tel"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+            <UFormField label="Address" class="sm:col-span-2">
+              <UTextarea v-model="form.address" />
+            </UFormField>
+
+            <UFormField label="Postal Code">
+              <UInput v-model="form.postal_code" />
+            </UFormField>
+
+            <UFormField label="Timezone">
+              <UInput v-model="form.timezone" />
+            </UFormField>
+
+          </div>
+        </div>
+
+        <!-- Professional -->
+        <div>
+          <h3 class="font-medium mb-3">Professional</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+            <UFormField label="Department" required>
+              <USelect
+                            value-key="value"
+
+                v-model="form.department"
+                :items="departments"
+                option-attribute="label"
+                value-attribute="value"
+              />
+            </UFormField>
+
+            <UFormField label="Expertise Level">
+              <USelect
+                            value-key="value"
+
+                v-model="form.expertise_level"
+                :items="expertiseLevels"
+                option-attribute="label"
+                value-attribute="value"
+              />
+            </UFormField>
+
+            <UFormField label="Years Experience">
+              <UInput v-model.number="form.years_experience" type="number" />
+            </UFormField>
+
+            <UFormField label="Current Position">
+              <UInput v-model="form.current_position" />
+            </UFormField>
+
+            <UFormField label="Company">
+              <UInput v-model="form.company" />
+            </UFormField>
+
+            <UFormField label="Skills" class="sm:col-span-2">
+              <UTextarea
+                :value="form.skills.join(', ')"
+                @input="form.skills = ($event.target.value || '').split(',').map(s => s.trim()).filter(Boolean)"
+              />
+            </UFormField>
+
+          </div>
+        </div>
+
+        <!-- Additional -->
+        <div>
+          <h3 class="font-medium mb-3">Additional</h3>
+          <div class="space-y-4">
+
+            <UFormField label="Languages">
+              <UTextarea
+                :value="form.languages.join(', ')"
+                @input="form.languages = ($event.target.value || '').split(',').map(s => s.trim()).filter(Boolean)"
+              />
+            </UFormField>
+
+            <UFormField label="Bio">
+              <UTextarea v-model="form.bio" />
+            </UFormField>
+
+            <UFormField label="Notes">
+              <UTextarea v-model="form.notes" />
+            </UFormField>
+
+            <UFormField label="Tags">
+              <UTextarea
+                :value="form.tags.join(', ')"
+                @input="form.tags = ($event.target.value || '').split(',').map(s => s.trim()).filter(Boolean)"
+              />
+            </UFormField>
+
+          </div>
+        </div>
+
+        <!-- Preferences -->
+        <div>
+          <h3 class="font-medium mb-3">Preferences</h3>
+          <div class="space-y-3">
+
+            <div class="flex items-center justify-between">
+              <span class="text-sm">SMS Enabled</span>
+              <USwitch v-model="form.sms_enabled" />
             </div>
-          </div>
 
-          <!-- Location Information Section -->
-          <div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Location</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <!-- Country -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Country *</label>
-                <input
-                  v-model="form.country"
-                  type="text"
-                  required
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+            <UFormField label="Preferred Contact">
+              <USelect
+              value-key="value"
+                v-model="form.preferred_contact_method"
+                :items="[
+                  { label: 'SMS', value: 'sms' },
+                  { label: 'Email', value: 'email' },
+                  { label: 'WhatsApp', value: 'whatsapp' },
+                  { label: 'Phone', value: 'phone' }
+                ]"
+              />
+            </UFormField>
 
-              <!-- City -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">City *</label>
-                <input
-                  v-model="form.city"
-                  type="text"
-                  required
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <!-- Address -->
-              <div class="sm:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address</label>
-                <textarea
-                  v-model="form.address"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows="2"
-                ></textarea>
-              </div>
-
-              <!-- Postal Code -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Postal Code</label>
-                <input
-                  v-model="form.postal_code"
-                  type="text"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <!-- Timezone -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Timezone</label>
-                <input
-                  v-model="form.timezone"
-                  type="text"
-                  placeholder="e.g., UTC, EST"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm">Active</span>
+              <USwitch v-model="form.is_active" />
             </div>
+
           </div>
+        </div>
 
-          <!-- Professional Information Section -->
-          <div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Professional Information</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <!-- Department -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Department *</label>
-                <select
-                  v-model="form.department"
-                  required
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select Department</option>
-                  <option v-for="dept in departments" :key="dept.value" :value="dept.value">
-                    {{ dept.label }}
-                  </option>
-                </select>
-              </div>
+        <!-- Actions -->
+        <div class="flex justify-end gap-2 pt-4">
+          <UButton variant="ghost" @click="close">Cancel</UButton>
 
-              <!-- Expertise Level -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expertise Level</label>
-                <select
-                  v-model="form.expertise_level"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select Level</option>
-                  <option v-for="level in expertiseLevels" :key="level.value" :value="level.value">
-                    {{ level.label }}
-                  </option>
-                </select>
-              </div>
+          <UButton type="submit" :loading="submitting">
+            {{ person ? 'Update' : 'Create' }}
+          </UButton>
+        </div>
 
-              <!-- Years of Experience -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Years of Experience</label>
-                <input
-                  v-model.number="form.years_experience"
-                  type="number"
-                  min="0"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <!-- Current Position -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Position</label>
-                <input
-                  v-model="form.current_position"
-                  type="text"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <!-- Company -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Company</label>
-                <input
-                  v-model="form.company"
-                  type="text"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <!-- Skills -->
-              <div class="sm:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Skills (comma-separated)</label>
-                <textarea
-                  :value="form.skills.join(', ')"
-                  @input="form.skills = ($event.target as HTMLTextAreaElement).value.split(',').map(s => s.trim()).filter(Boolean)"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows="2"
-                ></textarea>
-              </div>
-            </div>
-          </div>
-
-          <!-- Additional Information Section -->
-          <div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Additional Information</h3>
-            <div class="space-y-4">
-              <!-- Languages -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Languages (comma-separated)</label>
-                <textarea
-                  :value="form.languages.join(', ')"
-                  @input="form.languages = ($event.target as HTMLTextAreaElement).value.split(',').map(s => s.trim()).filter(Boolean)"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows="2"
-                ></textarea>
-              </div>
-
-              <!-- Bio -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bio</label>
-                <textarea
-                  v-model="form.bio"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows="3"
-                ></textarea>
-              </div>
-
-              <!-- Notes -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
-                <textarea
-                  v-model="form.notes"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows="2"
-                ></textarea>
-              </div>
-
-              <!-- Tags -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tags (comma-separated)</label>
-                <textarea
-                  :value="form.tags.join(', ')"
-                  @input="form.tags = ($event.target as HTMLTextAreaElement).value.split(',').map(s => s.trim()).filter(Boolean)"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows="2"
-                ></textarea>
-              </div>
-            </div>
-          </div>
-
-          <!-- Contact Preferences Section -->
-          <div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Contact Preferences</h3>
-            <div class="space-y-3">
-              <!-- SMS Enabled -->
-              <label class="flex items-center space-x-3">
-                <input
-                  v-model="form.sms_enabled"
-                  type="checkbox"
-                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <span class="text-sm text-gray-700 dark:text-gray-300">Can receive SMS</span>
-              </label>
-
-              <!-- Preferred Contact Method -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Preferred Contact Method</label>
-                <select
-                  v-model="form.preferred_contact_method"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="sms">SMS</option>
-                  <option value="email">Email</option>
-                  <option value="whatsapp">WhatsApp</option>
-                  <option value="phone">Phone</option>
-                </select>
-              </div>
-
-              <!-- Active Status -->
-              <label class="flex items-center space-x-3">
-                <input
-                  v-model="form.is_active"
-                  type="checkbox"
-                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <span class="text-sm text-gray-700 dark:text-gray-300">Active</span>
-              </label>
-            </div>
-          </div>
-
-          <!-- Form Actions -->
-          <div class="sticky bottom-0 border-t border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-end space-x-3">
-            <button
-              type="button"
-              @click="close"
-              class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              :disabled="submitting"
-              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {{ submitting ? 'Saving...' : (person ? 'Update' : 'Create') }}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </Teleport>
+      </UForm>
+    </UCard>
+    </template>
+  </UModal>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
+
+const isOpen = computed({
+  get: () => true,
+  set: (val) => { if (!val) close() }
+})
+
 import { useApi } from '~/composables/useApi'
 import { useEndpoints } from '~/composables/useEndpoints'
 import { useAuthStore } from '~/stores/auth'

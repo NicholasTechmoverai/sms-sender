@@ -1,11 +1,24 @@
 <script setup lang="ts">
-import { definePageMeta } from '#imports'
+import { definePageMeta } from "#imports";
 import type { FormError, FormSubmitEvent } from "@nuxt/ui";
 import { useAuthStore } from "../../stores/auth";
 
 definePageMeta({
-  middleware: 'auth'
-})
+  middleware: "auth",
+});
+
+const smsOptions = ref<CheckboxGroupItem[]>([
+  {
+    label: "WhatsApp",
+    description: "Faster, more engaging.",
+    id: "whatsapp",
+  },
+  {
+    label: "SMS",
+    description: "Works on all phones.",
+    id: "plain",
+  },
+]);
 
 const stateStore = useAuthStore();
 const openSelector = ref(false);
@@ -33,19 +46,19 @@ const state = reactive({
   phone_input: "",
   country_code: "+254",
   text: "",
+  type: "plain"
 });
-
 
 watch(
   () => state.text,
   (val) => {
-    stateStore.message = val
-  }
-)
+    stateStore.message = val;
+  },
+);
 
 onMounted(() => {
-  state.text = stateStore.message
-})
+  state.text = stateStore.message;
+});
 const loading = ref(false);
 const balance = ref<BalanceResponse | null>(null);
 const toast = useToast();
@@ -105,9 +118,7 @@ function formatPhoneNumber(phone: string) {
 }
 
 // Country codes
-const countryCodes = [
-  { label: "+254 (Kenya)", value: "+254" },
-];
+const countryCodes = [{ label: "+254 (Kenya)", value: "+254" }];
 
 // Get display numbers (latest first, limited to 5)
 const displayNumbers = computed(() => {
@@ -115,7 +126,7 @@ const displayNumbers = computed(() => {
   const reversed = [...state.phone_numbers].reverse();
   return {
     latest: reversed.slice(0, 5),
-    remaining: Math.max(0, state.phone_numbers.length - 5)
+    remaining: Math.max(0, state.phone_numbers.length - 5),
   };
 });
 
@@ -130,7 +141,7 @@ function addPhoneNumber() {
     state.phone_numbers.push(fullNumber);
     state.phone_input = "";
     showManualInput.value = false;
-    
+
     toast.add({
       title: "Number added",
       description: "Phone number added to recipients",
@@ -165,13 +176,13 @@ function addToRecipients(phone: any) {
     toast.add({
       title: "Added",
       description: "Phone added to recipients",
-      color: "success"
+      color: "success",
     });
   } else {
     toast.add({
       title: "Duplicate",
       description: "Phone already in list",
-      color: "warning"
+      color: "warning",
     });
   }
 }
@@ -179,15 +190,15 @@ function addToRecipients(phone: any) {
 function addAllToRecipients() {
   if (stateStore.ongoingSMS?.phones) {
     const newPhones = stateStore.ongoingSMS.phones
-      .map(p => p.phone)
-      .filter(phone => !state.phone_numbers.includes(phone));
-    
+      .map((p) => p.phone)
+      .filter((phone) => !state.phone_numbers.includes(phone));
+
     state.phone_numbers = [...state.phone_numbers, ...newPhones];
-    
+
     toast.add({
       title: "Added",
       description: `${newPhones.length} phones added to recipients`,
-      color: "success"
+      color: "success",
     });
   }
 }
@@ -197,24 +208,26 @@ function removeStoredPhone(index: number) {
     const phoneToRemove = stateStore.ongoingSMS.phones[index];
     const updatedPhones = [...stateStore.ongoingSMS.phones];
     updatedPhones.splice(index, 1);
-    
+
     // Update store
     stateStore.ongoingSMS = {
       ...stateStore.ongoingSMS,
       phones: updatedPhones,
-      count: updatedPhones.length
+      count: updatedPhones.length,
     };
-    
+
     // Also remove from recipients if present
-    const recipientIndex = state.phone_numbers.findIndex(p => p === phoneToRemove.phone);
+    const recipientIndex = state.phone_numbers.findIndex(
+      (p) => p === phoneToRemove.phone,
+    );
     if (recipientIndex !== -1) {
       state.phone_numbers.splice(recipientIndex, 1);
     }
-    
+
     toast.add({
       title: "Removed",
       description: "Phone removed from store and recipients",
-      color: "info"
+      color: "info",
     });
   }
 }
@@ -222,21 +235,23 @@ function removeStoredPhone(index: number) {
 function clearAllStored() {
   // Remove all stored phones from recipients
   if (stateStore.ongoingSMS?.phones) {
-    const storedPhones = stateStore.ongoingSMS.phones.map(p => p.phone);
-    state.phone_numbers = state.phone_numbers.filter(p => !storedPhones.includes(p));
+    const storedPhones = stateStore.ongoingSMS.phones.map((p) => p.phone);
+    state.phone_numbers = state.phone_numbers.filter(
+      (p) => !storedPhones.includes(p),
+    );
   }
-  
+
   // Clear store
-  stateStore.ongoingSMS = { 
-    phones: [], 
-    count: 0, 
-    timestamp: new Date().toISOString() 
+  stateStore.ongoingSMS = {
+    phones: [],
+    count: 0,
+    timestamp: new Date().toISOString(),
   };
-  
+
   toast.add({
     title: "Cleared",
     description: "All stored phones removed",
-    color: "info"
+    color: "info",
   });
 }
 
@@ -245,7 +260,7 @@ async function copySinglePhone(phone: string) {
   toast.add({
     title: "Copied!",
     description: "Phone number copied",
-    color: "green"
+    color: "green",
   });
 }
 
@@ -253,29 +268,39 @@ async function copySinglePhone(phone: string) {
 onMounted(() => {
   fetchBalance();
   if (stateStore.ongoingSMS?.phones?.length) {
-    state.phone_numbers = stateStore.ongoingSMS.phones.map(p => p.phone);
+    state.phone_numbers = stateStore.ongoingSMS.phones.map((p) => p.phone);
   }
 });
 
 // Watch for store changes
-watch(() => stateStore.ongoingSMS?.phones, (newPhones) => {
-  if (newPhones) {
-    // Sync recipients with store (add new ones, but don't remove manually added)
-    const storePhoneNumbers = newPhones.map(p => p.phone);
-    const currentNumbers = state.phone_numbers;
-    
-    // Add any new store phones not already in recipients
-    const newNumbers = storePhoneNumbers.filter(p => !currentNumbers.includes(p));
-    if (newNumbers.length) {
-      state.phone_numbers = [...currentNumbers, ...newNumbers];
+watch(
+  () => stateStore.ongoingSMS?.phones,
+  (newPhones) => {
+    if (newPhones) {
+      // Sync recipients with store (add new ones, but don't remove manually added)
+      const storePhoneNumbers = newPhones.map((p) => p.phone);
+      const currentNumbers = state.phone_numbers;
+
+      // Add any new store phones not already in recipients
+      const newNumbers = storePhoneNumbers.filter(
+        (p) => !currentNumbers.includes(p),
+      );
+      if (newNumbers.length) {
+        state.phone_numbers = [...currentNumbers, ...newNumbers];
+      }
     }
-  }
-}, { deep: true });
+  },
+  { deep: true },
+);
 
 // Methods
 async function fetchBalance() {
   try {
-    const res = await get<BalanceResponse>(endpoints.sms.balance, undefined, true);
+    const res = await get<BalanceResponse>(
+      endpoints.sms.balance,
+      undefined,
+      true,
+    );
     balance.value = res;
   } catch (error) {
     console.error("Failed to fetch balance:", error);
@@ -310,6 +335,7 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
   const payload: SendSmsPayload = {
     message: state.text,
     recipient: state.phone_numbers,
+    type:state.type
   };
 
   try {
@@ -388,6 +414,17 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
         </div>
       </div>
 
+      <div class="my-2">
+        <URadioGroup
+          orientation="horizontal"
+          value-key="id"
+          v-model="state.type"
+          indicator="end"
+          variant="card"
+          :items="smsOptions"
+        />
+      </div>
+
       <!-- Main Form Card -->
       <UCard class="border-0 shadow-lg">
         <UForm
@@ -400,13 +437,18 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
           <div class="space-y-4">
             <!-- Header with actions -->
             <div class="flex items-center justify-between">
-              <label class="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+              <label
+                class="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+              >
                 Recipients <span class="text-error-500">*</span>
-                <span v-if="recipientCount" class="ml-2 text-xs text-neutral-500">
+                <span
+                  v-if="recipientCount"
+                  class="ml-2 text-xs text-neutral-500"
+                >
                   ({{ recipientCount }} selected)
                 </span>
               </label>
-              
+
               <div class="flex items-center gap-2">
                 <UButton
                   size="xs"
@@ -415,9 +457,9 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
                   icon="i-heroicons-plus-circle"
                   @click="showManualInput = !showManualInput"
                 >
-                  {{ showManualInput ? 'Cancel' : 'Add Manual' }}
+                  {{ showManualInput ? "Cancel" : "Add Manual" }}
                 </UButton>
-                
+
                 <UButton
                   size="xs"
                   color="primary"
@@ -431,7 +473,10 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
             </div>
 
             <!-- Manual Input (collapsible) -->
-            <div v-if="showManualInput" class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4 transition-all">
+            <div
+              v-if="showManualInput"
+              class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4 transition-all"
+            >
               <div class="flex gap-2">
                 <USelect
                   v-model="state.country_code"
@@ -455,17 +500,29 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
                 />
               </div>
               <p class="text-xs text-neutral-500 mt-2">
-                Press Enter to add • Country code will be prepended automatically
+                Press Enter to add • Country code will be prepended
+                automatically
               </p>
             </div>
 
             <!-- Stored Selection Summary -->
-            <div v-if="stateStore.ongoingSMS?.phones?.length" class="flex items-center justify-between bg-primary-50 dark:bg-primary-900/20 rounded-lg p-3">
+            <div
+              v-if="stateStore.ongoingSMS?.phones?.length"
+              class="flex items-center justify-between bg-primary-50 dark:bg-primary-900/20 rounded-lg p-3"
+            >
               <div class="flex items-center gap-2">
-                <UIcon name="i-heroicons-check-badge" class="w-5 h-5 text-primary-500" />
+                <UIcon
+                  name="i-heroicons-check-badge"
+                  class="w-5 h-5 text-primary-500"
+                />
                 <div>
-                  <span class="text-sm font-medium">{{ stateStore.ongoingSMS.phones.length }} numbers from filter</span>
-                  <p class="text-xs text-neutral-500">Click to view or add individually</p>
+                  <span class="text-sm font-medium"
+                    >{{ stateStore.ongoingSMS.phones.length }} numbers from
+                    filter</span
+                  >
+                  <p class="text-xs text-neutral-500">
+                    Click to view or add individually
+                  </p>
                 </div>
               </div>
               <div class="flex gap-2">
@@ -478,7 +535,12 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
                   Add All
                 </UButton>
                 <UModal v-model="openSelector">
-                  <UButton size="xs" color="neutral" variant="ghost" icon="i-heroicons-eye">
+                  <UButton
+                    size="xs"
+                    color="neutral"
+                    variant="ghost"
+                    icon="i-heroicons-eye"
+                  >
                     View
                   </UButton>
                   <template #content>
@@ -486,7 +548,9 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
                       <template #header>
                         <div class="flex items-center justify-between">
                           <h3 class="text-lg font-semibold">
-                            Filtered Numbers ({{ stateStore.ongoingSMS?.phones?.length || 0 }})
+                            Filtered Numbers ({{
+                              stateStore.ongoingSMS?.phones?.length || 0
+                            }})
                           </h3>
                           <UButton
                             color="neutral"
@@ -496,20 +560,25 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
                           />
                         </div>
                       </template>
-                      
+
                       <div class="max-h-96 overflow-y-auto space-y-2">
                         <div v-if="stateStore.ongoingSMS?.phones?.length">
                           <div
-                            v-for="(phone, index) in stateStore.ongoingSMS.phones"
+                            v-for="(phone, index) in stateStore.ongoingSMS
+                              .phones"
                             :key="index"
                             class="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg flex items-center justify-between"
                           >
                             <div class="flex-1">
                               <div class="font-mono text-sm">
-                                {{ phone.formatted || formatPhoneNumber(phone.phone) }}
+                                {{
+                                  phone.formatted ||
+                                  formatPhoneNumber(phone.phone)
+                                }}
                               </div>
                               <div class="text-xs text-gray-500">
-                                {{ phone.name || 'Unknown' }} • {{ phone.department || "N/A" }}
+                                {{ phone.name || "Unknown" }} •
+                                {{ phone.department || "N/A" }}
                               </div>
                             </div>
                             <div class="flex gap-1">
@@ -587,17 +656,21 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
                   size="lg"
                   class="pl-3 pr-1 py-1.5"
                 >
-                  <span class="font-mono text-sm">{{ formatPhoneNumber(phone) }}</span>
+                  <span class="font-mono text-sm">{{
+                    formatPhoneNumber(phone)
+                  }}</span>
                   <UButton
                     size="2xs"
                     color="neutral"
                     variant="ghost"
                     icon="i-heroicons-x-mark"
                     class="ml-1"
-                    @click="removePhoneNumber(state.phone_numbers.length - 1 - idx)"
+                    @click="
+                      removePhoneNumber(state.phone_numbers.length - 1 - idx)
+                    "
                   />
                 </UBadge>
-                
+
                 <!-- Show remaining count if more than 5 -->
                 <UBadge
                   v-if="displayNumbers.remaining > 0"
@@ -610,26 +683,43 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
                   +{{ displayNumbers.remaining }} more
                 </UBadge>
               </div>
-              
+
               <!-- Hint for viewing all -->
-              <p v-if="displayNumbers.remaining > 0" class="text-xs text-neutral-500 mt-2">
-                Showing latest {{ displayNumbers.latest.length }} of {{ state.phone_numbers.length }} • 
-                <button class="text-primary-500 hover:underline" @click="openSelector = true">
+              <p
+                v-if="displayNumbers.remaining > 0"
+                class="text-xs text-neutral-500 mt-2"
+              >
+                Showing latest {{ displayNumbers.latest.length }} of
+                {{ state.phone_numbers.length }} •
+                <button
+                  class="text-primary-500 hover:underline"
+                  @click="openSelector = true"
+                >
                   Click to view all
                 </button>
               </p>
             </div>
 
             <!-- Empty State -->
-            <div v-else class="text-center py-6 border-2 border-dashed border-neutral-200 dark:border-neutral-700 rounded-lg">
-              <UIcon name="i-heroicons-phone" class="w-8 h-8 mx-auto text-neutral-400" />
+            <div
+              v-else
+              class="text-center py-6 border-2 border-dashed border-neutral-200 dark:border-neutral-700 rounded-lg"
+            >
+              <UIcon
+                name="i-heroicons-phone"
+                class="w-8 h-8 mx-auto text-neutral-400"
+              />
               <p class="mt-2 text-sm text-neutral-500">No recipients yet</p>
-              <p class="text-xs text-neutral-400">Add manually or select from filters</p>
+              <p class="text-xs text-neutral-400">
+                Add manually or select from filters
+              </p>
             </div>
           </div>
 
           <!-- Message Section -->
-          <div class="space-y-3 pt-4 border-t border-neutral-200 dark:border-neutral-700">
+          <div
+            class="space-y-3 pt-4 border-t border-neutral-200 dark:border-neutral-700"
+          >
             <div class="flex items-center justify-between">
               <label
                 class="text-sm font-medium text-neutral-700 dark:text-neutral-300"
@@ -718,7 +808,9 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
           </div>
 
           <!-- Action Area -->
-          <div class="flex items-center justify-between pt-4 border-t border-neutral-200 dark:border-neutral-700">
+          <div
+            class="flex items-center justify-between pt-4 border-t border-neutral-200 dark:border-neutral-700"
+          >
             <div class="flex items-center gap-3">
               <UButton
                 type="submit"
@@ -729,7 +821,6 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
                 icon="i-heroicons-paper-airplane"
                 :label="loading ? 'Sending...' : 'Send Message'"
               />
-               
             </div>
 
             <!-- Cost estimate -->
@@ -737,8 +828,16 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
               v-if="smsCount > 0 && recipientCount > 0"
               class="text-sm text-neutral-600 dark:text-neutral-400"
             >
-              <span class="font-medium">{{ recipientCount }}</span> recipient{{ recipientCount > 1 ? "s" : "" }} •
-              <span class="font-mono">KES {{ (smsCount * recipientCount * SMS_UNIT_COST).toFixed(2) }}</span>
+              <span class="font-medium">{{ recipientCount }}</span> recipient{{
+                recipientCount > 1 ? "s" : ""
+              }}
+              •
+              <span class="font-mono"
+                >KES
+                {{
+                  (smsCount * recipientCount * SMS_UNIT_COST).toFixed(2)
+                }}</span
+              >
             </div>
           </div>
         </UForm>
@@ -753,7 +852,8 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
           />
           <div class="text-xs text-neutral-600 dark:text-neutral-400 space-y-1">
             <p>
-              • Each SMS segment: {{ SMS_CHAR_LIMIT }} chars (standard) / {{ SMS_CHAR_LIMIT_UNICODE }} chars (Unicode)
+              • Each SMS segment: {{ SMS_CHAR_LIMIT }} chars (standard) /
+              {{ SMS_CHAR_LIMIT_UNICODE }} chars (Unicode)
             </p>
             <p>• Cost: KES {{ SMS_UNIT_COST }} per segment per recipient</p>
             <p>• Latest 5 numbers shown • Click "+X more" to view all</p>

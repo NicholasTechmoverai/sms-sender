@@ -16,11 +16,7 @@ export const useNavLinks = () => {
         icon: 'i-lucide-message-circle',
         to: '/sms'
       },
-      {
-        label: 'WhatsApp',
-        icon: 'i-simple-icon-whatsapp',
-        to: '/whatsapp'
-      },
+     
       {
         label: 'About',
         icon: 'i-lucide-info',

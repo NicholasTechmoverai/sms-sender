@@ -46,205 +46,209 @@
       </div>
     </div>
 
-   <!-- Search Filters -->
-<UCard v-if="showFilter" class="shadow-sm">
-  <template #header>
-    <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-      <div>
-        <h2 class="text-lg font-semibold">Search Filters</h2>
-        <p class="text-sm text-gray-500">Refine your search with the options below</p>
-      </div>
-
-      <div class="flex gap-2">
-        <UButton
-          color="neutral"
-          variant="soft"
-          icon="i-heroicons-arrow-path"
-          :loading="loading"
-          @click="resetFilters"
+    <!-- Search Filters -->
+    <UCard v-if="showFilter" class="shadow-sm">
+      <template #header>
+        <div
+          class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
         >
-          Reset
-        </UButton>
-        <UButton
-          color="primary"
-          icon="i-heroicons-magnifying-glass"
-          :loading="loading"
-          @click="search"
-        >
-          Search
-        </UButton>
-      </div>
-    </div>
-  </template>
+          <div>
+            <h2 class="text-lg font-semibold">Search Filters</h2>
+            <p class="text-sm text-gray-500">
+              Refine your search with the options below
+            </p>
+          </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-    <!-- Location -->
-    <div class="flex flex-col gap-3 min-w-0">
-      <UFormField label="Country">
-        <UInput
-          class="min-w-0"
-          v-model="filters.country"
-          placeholder="e.g Kenya"
-          icon="i-heroicons-map-pin"
-        />
-      </UFormField>
-
-      <UFormField label="City">
-        <UInput
-          class="min-w-0"
-          v-model="filters.city"
-          placeholder="e.g Nairobi"
-          icon="i-heroicons-building-office-2"
-        />
-      </UFormField>
-    </div>
-
-    <!-- Professional Info -->
-    <div class="flex flex-col gap-3 min-w-0">
-      <UFormField label="Department">
-        <USelect
-          class="min-w-0"
-          v-model="filters.department"
-          :items="departmentOptions"
-          placeholder="Select department"
-          clearable
-        />
-      </UFormField>
-
-      <UFormField label="Expertise Level">
-        <USelect
-          class="min-w-0"
-          v-model="filters.expertise_level"
-          :items="expertiseOptions"
-          placeholder="Select level"
-          clearable
-        />
-      </UFormField>
-
-      <UFormField label="Experience (Years)">
-        <UInput
-          class="min-w-0"
-          v-model="filters.min_experience"
-          type="number"
-          min="0"
-          max="50"
-          placeholder="e.g 3"
-        />
-      </UFormField>
-    </div>
-
-    <!-- Skills & Languages -->
-    <div class="flex flex-col gap-3 min-w-0">
-      <UFormField label="Skills">
-        <USelectMenu
-          class="min-w-0"
-          v-model="filters.required_skills"
-          :items="commonSkills"
-          multiple
-          searchable
-          placeholder="Select skills"
-        />
-      </UFormField>
-
-      <UFormField label="Languages">
-        <USelectMenu
-          class="min-w-0"
-          v-model="filters.languages"
-          :items="commonLanguages"
-          multiple
-          placeholder="Select languages"
-        />
-      </UFormField>
-    </div>
-
-    <!-- Age Range -->
-    <div class="flex flex-col gap-3 min-w-0">
-      <UFormField label="Age Range">
-        <div class="flex gap-2">
-          <UInput
-            class="min-w-0"
-            v-model="filters.min_age"
-            type="number"
-            min="18"
-            max="100"
-            placeholder="Min"
-          />
-          <UInput
-            class="min-w-0"
-            v-model="filters.max_age"
-            type="number"
-            min="18"
-            max="100"
-            placeholder="Max"
-          />
+          <div class="flex gap-2">
+            <UButton
+              color="neutral"
+              variant="soft"
+              icon="i-heroicons-arrow-path"
+              :loading="loading"
+              @click="resetFilters"
+            >
+              Reset
+            </UButton>
+            <UButton
+              color="primary"
+              icon="i-heroicons-magnifying-glass"
+              :loading="loading"
+              @click="search"
+            >
+              Search
+            </UButton>
+          </div>
         </div>
-      </UFormField>
-    </div>
+      </template>
 
-    <!-- Identity -->
-    <div class="flex flex-col gap-3 min-w-0">
-      <UFormField label="Name">
-        <UInput
-          class="min-w-0"
-          v-model="filters.name_contains"
-          placeholder="Search by name"
-          icon="i-heroicons-user"
-        />
-      </UFormField>
-    </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Location -->
+        <div class="flex flex-col gap-3 min-w-0">
+          <UFormField label="Country">
+            <UInput
+              class="min-w-0"
+              v-model="filters.country"
+              placeholder="e.g Kenya"
+              icon="i-heroicons-map-pin"
+            />
+          </UFormField>
 
-    <!-- Status -->
-    <div class="flex flex-col gap-3 min-w-0">
-      <UFormField label="Status">
-        <USelect
-          class="min-w-0"
-          v-model="filters.is_active"
-          :items="statusOptions"
-          placeholder="Any"
-          clearable
-        />
-      </UFormField>
-    </div>
+          <UFormField label="City">
+            <UInput
+              class="min-w-0"
+              v-model="filters.city"
+              placeholder="e.g Nairobi"
+              icon="i-heroicons-building-office-2"
+            />
+          </UFormField>
+        </div>
 
-    <!-- Contact -->
-    <div class="flex flex-col gap-3 min-w-0">
-      <UFormField label="Phone">
-        <UInput
-          class="min-w-0"
-          v-model="filters.phone_contains"
-          placeholder="Partial phone number"
-          icon="i-heroicons-phone"
-        />
-      </UFormField>
+        <!-- Professional Info -->
+        <div class="flex flex-col gap-3 min-w-0">
+          <UFormField label="Department">
+            <USelect
+              class="min-w-0"
+              v-model="filters.department"
+              :items="departmentOptions"
+              placeholder="Select department"
+              clearable
+            />
+          </UFormField>
 
-      <UFormField label="Has Phone">
-        <USelect
-          class="min-w-0"
-          v-model="filters.has_phone"
-          :items="[
-            { label: 'Yes', value: true },
-            { label: 'No', value: false }
-          ]"
-          placeholder="Any"
-          clearable
-        />
-      </UFormField>
+          <UFormField label="Expertise Level">
+            <USelect
+              class="min-w-0"
+              v-model="filters.expertise_level"
+              :items="expertiseOptions"
+              placeholder="Select level"
+              clearable
+            />
+          </UFormField>
 
-      <UFormField label="SMS Enabled">
-        <USelect
-          class="min-w-0"
-          v-model="filters.sms_enabled"
-          :items="[
-            { label: 'Yes', value: true },
-            { label: 'No', value: false }
-          ]"
-          placeholder="Any"
-          clearable
-        />
-      </UFormField>
-    </div>
-  </div>
-</UCard>
+          <UFormField label="Experience (Years)">
+            <UInput
+              class="min-w-0"
+              v-model="filters.min_experience"
+              type="number"
+              min="0"
+              max="50"
+              placeholder="e.g 3"
+            />
+          </UFormField>
+        </div>
+
+        <!-- Skills & Languages -->
+        <div class="flex flex-col gap-3 min-w-0">
+          <UFormField label="Skills">
+            <USelectMenu
+              class="min-w-0"
+              v-model="filters.required_skills"
+              :items="commonSkills"
+              multiple
+              searchable
+              placeholder="Select skills"
+            />
+          </UFormField>
+
+          <UFormField label="Languages">
+            <USelectMenu
+              class="min-w-0"
+              v-model="filters.languages"
+              :items="commonLanguages"
+              multiple
+              placeholder="Select languages"
+            />
+          </UFormField>
+        </div>
+
+        <!-- Age Range -->
+        <div class="flex flex-col gap-3 min-w-0">
+          <UFormField label="Age Range">
+            <div class="flex gap-2">
+              <UInput
+                class="min-w-0"
+                v-model="filters.min_age"
+                type="number"
+                min="18"
+                max="100"
+                placeholder="Min"
+              />
+              <UInput
+                class="min-w-0"
+                v-model="filters.max_age"
+                type="number"
+                min="18"
+                max="100"
+                placeholder="Max"
+              />
+            </div>
+          </UFormField>
+        </div>
+
+        <!-- Identity -->
+        <div class="flex flex-col gap-3 min-w-0">
+          <UFormField label="Name">
+            <UInput
+              class="min-w-0"
+              v-model="filters.name_contains"
+              placeholder="Search by name"
+              icon="i-heroicons-user"
+            />
+          </UFormField>
+        </div>
+
+        <!-- Status -->
+        <div class="flex flex-col gap-3 min-w-0">
+          <UFormField label="Status">
+            <USelect
+              class="min-w-0"
+              v-model="filters.is_active"
+              :items="statusOptions"
+              placeholder="Any"
+              clearable
+            />
+          </UFormField>
+        </div>
+
+        <!-- Contact -->
+        <div class="flex flex-col gap-3 min-w-0">
+          <UFormField label="Phone">
+            <UInput
+              class="min-w-0"
+              v-model="filters.phone_contains"
+              placeholder="Partial phone number"
+              icon="i-heroicons-phone"
+            />
+          </UFormField>
+
+          <UFormField label="Has Phone">
+            <USelect
+              class="min-w-0"
+              v-model="filters.has_phone"
+              :items="[
+                { label: 'Yes', value: true },
+                { label: 'No', value: false },
+              ]"
+              placeholder="Any"
+              clearable
+            />
+          </UFormField>
+
+          <UFormField label="SMS Enabled">
+            <USelect
+              class="min-w-0"
+              v-model="filters.sms_enabled"
+              :items="[
+                { label: 'Yes', value: true },
+                { label: 'No', value: false },
+              ]"
+              placeholder="Any"
+              clearable
+            />
+          </UFormField>
+        </div>
+      </div>
+    </UCard>
 
     <!-- Bulk Actions -->
     <div
@@ -365,9 +369,44 @@
             class="max-w-sm"
             placeholder="Filter..."
           />
+          <div  class="flex items-center gap-2">
+            <UDropdownMenu
+              :items="
+                table?.tableApi
+                  ?.getAllColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => ({
+                    label: upperFirst(column.id),
+                    type: 'checkbox' as const,
+                    checked: column.getIsVisible(),
+                    onUpdateChecked(checked: boolean) {
+                      table?.tableApi
+                        ?.getColumn(column.id)
+                        ?.toggleVisibility(!!checked);
+                    },
+                    onSelect(e: Event) {
+                      e.preventDefault();
+                    },
+                  }))
+              "
+              :content="{ align: 'end' }"
+            >
+              <UButton
+                label="Columns"
+                color="neutral"
+                variant="outline"
+                trailing-icon="i-lucide-chevron-down"
+              />
+            </UDropdownMenu>
 
-            <UButton icon="i-lucide-sliders-horizontal" size="md" color="primary" @click="showFilter = !showFilter" variant="solid" />
-
+            <UButton
+              icon="i-lucide-sliders-horizontal"
+              size="md"
+              color="primary"
+              @click="showFilter = !showFilter"
+              variant="solid"
+            />
+          </div>
         </div>
 
         <UTable
@@ -375,6 +414,7 @@
           v-model:global-filter="globalFilter"
           v-model:row-selection="rowSelection"
           v-model:sort="sortState"
+          v-model:column-visibility="columnVisibility"
           :data="users"
           :columns="columns"
           :loading="loading"
@@ -701,6 +741,7 @@
 import { h, resolveComponent } from "vue";
 import type { TableColumn } from "@nuxt/ui";
 import type { Column } from "@tanstack/vue-table";
+import { upperFirst } from "scule";
 
 const showFilter = ref(false);
 const UBadge = resolveComponent("UBadge");
@@ -859,6 +900,15 @@ function getHeader(column: Column<User>, label: string) {
       }),
   );
 }
+
+const columnVisibility = ref({
+  id: false,
+  email: false,
+  department: false,
+  age: false,
+  years_experience: false,
+  is_active: false,
+});
 
 // Table Columns
 const columns: TableColumn<User>[] = [
@@ -1379,22 +1429,22 @@ function actionItems(row: User) {
         onSelect: () => navigator.clipboard.writeText(row.phone || ""),
       },
     ],
-    [
-      {
-        label: "Add to Manual",
-        icon: "i-heroicons-phone-plus",
-        onSelect: () => {
-          if (row.phone) {
-            manualPhones.value.push({ phone: row.phone, name: row.name });
-            useToast().add({
-              title: "Added",
-              description: "Phone added to manual",
-              color: "success",
-            });
-          }
-        },
-      },
-    ],
+    // [
+    //   {
+    //     label: "Add to Manual",
+    //     icon: "i-heroicons-phone-plus",
+    //     onSelect: () => {
+    //       if (row.phone) {
+    //         manualPhones.value.push({ phone: row.phone, name: row.name });
+    //         useToast().add({
+    //           title: "Added",
+    //           description: "Phone added to manual",
+    //           color: "success",
+    //         });
+    //       }
+    //     },
+    //   },
+    // ],
   ];
 }
 

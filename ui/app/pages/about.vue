@@ -27,7 +27,7 @@ useSeoMeta({
       :description="page.description"
       orientation="horizontal"
       :ui="{
-        container: 'lg:flex sm:flex-row items-center',
+        container: 'lg:flex sm:flex-row items-center w-full',
         title: '!mx-0 text-left',
         description: '!mx-0 text-left',
         links: 'justify-start'

@@ -5,7 +5,6 @@ const props = defineProps<{
   links: NavigationMenuItem[]
 }>()
 
-console.log(props.links.value)
 </script>
 
 <template>
