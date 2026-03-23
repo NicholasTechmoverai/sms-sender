@@ -27,7 +27,7 @@ async def send_sms(request: Request, payload: SMSRequest, current_user = Depends
         res = await send_sms_service(
             recipient=",".join(payload.recipient),
             message=payload.message,
-            type="plain",
+            type= payload.type,
             schedule_time=payload.schedule_time,
         )
         if not res.get("status") == "success":

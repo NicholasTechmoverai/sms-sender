@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from core.logger import setup_logger
 from core.settings import settings
 
-logger = setup_logger("open_sms")
+logger = setup_logger(__name__)
 
 # OpenSMS API token
 API_TOKEN = settings.OPENSMS_API_TOKEN

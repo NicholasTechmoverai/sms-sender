@@ -78,6 +78,14 @@ class Settings(BaseSettings):
     SMTP_SERVER: str = "localhost"
     SMTP_PORT: int = 587
 
+
+    META_API_VERSION: str = "v18.0"
+    META_PHONE_NUMBER_ID: str  # Your WhatsApp Business phone number ID
+    META_ACCESS_TOKEN: str  # Permanent access token
+    META_APP_SECRET: str  # App secret for webhook verification
+    META_BUSINESS_ACCOUNT_ID: str  # WhatsApp Business Account ID
+    META_VERIFY_TOKEN: str  # Webhook verification token
+
     DATABASE_URL: str = "sqlite://db.sqlite3"
     REDIS_URL: str | None ="redis://localhost:6379/0"
  

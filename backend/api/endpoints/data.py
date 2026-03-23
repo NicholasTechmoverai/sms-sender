@@ -7,6 +7,7 @@ from schemas.auth import User as UserSchema
 from api.endpoints.auth import get_current_active_user
 from pydantic import BaseModel
 from datetime import datetime
+from tortoise.expressions import Q
 
 data_router = APIRouter(prefix="/data", tags=["Data Management"])
 logger = setup_logger(__name__)
@@ -91,12 +92,10 @@ async def get_all_people(
 
         if search:
             # Search by name or email
-            query = query.filter(
-                Person.name.icontains(search) | Person.email.icontains(search)
-            )
+            query = query.filter(Q(name__icontains=search) | Q(email__icontains=search))
 
         if is_active is not None:
-            query = query.filter(Person.is_active == is_active)
+            query = query.filter(is_active=is_active)
 
         total = await query.count()
         people = await query.offset(skip).limit(limit).all()
