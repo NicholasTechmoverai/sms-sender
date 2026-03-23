@@ -1,3 +1,166 @@
+
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+import { useApi } from "~/composables/useApi";
+import { useEndpoints } from "~/composables/useEndpoints";
+import { useAuthStore } from "~/stores/auth";
+import DataFormModal from "~/components/data/DataFormModal.vue";
+import { definePageMeta } from "#imports";
+
+
+definePageMeta({
+  middleware: "auth",
+});
+
+useSeoMeta({
+  title: "Manage",
+  ogTitle: "Manage",
+  description: "Manage database",
+  ogDescription: "Manage database"
+})
+
+interface Person {
+  id: number;
+  name: string;
+  email: string;
+  age?: number;
+  phone?: string;
+  country: string;
+  city: string;
+  department: string;
+  expertise_level?: string;
+  years_experience: number;
+  is_active: boolean;
+  skills?: string[];
+  languages?: string[];
+  tags?: string[];
+  sms_enabled?: boolean;
+  preferred_contact_method?: string;
+  [key: string]: any;
+}
+
+const { get, del } = useApi();
+const endpoints = useEndpoints();
+const authStore = useAuthStore();
+const toast = useToast();
+
+// State
+const people = ref<Person[]>([]);
+const loading = ref(false);
+const showModal = ref(false);
+const selectedPerson = ref<Person | null>(null);
+const searchQuery = ref("");
+const skip = ref(0);
+const limit = ref(10);
+const total = ref(0);
+const departments = ref<any[]>([]);
+const expertiseLevels = ref<any[]>([]);
+
+// Fetch people
+const fetchPeople = async () => {
+  loading.value = true;
+  try {
+    const response = await get<{ items: Person[]; total: number }>(
+      endpoints.data.people,
+      {
+        skip: skip.value,
+        limit: limit.value,
+        search: searchQuery.value || undefined,
+      },
+      true,
+    );
+
+    people.value = response.items || [];
+    total.value = response.total || 0;
+  } catch (error: any) {
+    toast.add({
+      title: "Error",
+      description: error.data?.detail || "Failed to load people",
+      color: "red",
+    });
+  } finally {
+    loading.value = false;
+  }
+};
+
+// Fetch reference data
+const fetchReferenceData = async () => {
+  try {
+    const [depts, levels] = await Promise.all([
+      get<any[]>(endpoints.data.departments, undefined, true),
+      get<any[]>(endpoints.data.expertiseLevels, undefined, true),
+    ]);
+    departments.value = depts || [];
+    expertiseLevels.value = levels || [];
+  } catch (error) {
+    console.error("Failed to load reference data:", error);
+  }
+};
+
+// Open create modal
+const openCreateModal = () => {
+  selectedPerson.value = null;
+  showModal.value = true;
+};
+
+// Open edit modal
+const openEditModal = (person: Person) => {
+  selectedPerson.value = person;
+  showModal.value = true;
+};
+
+// Handle modal save
+const handleSave = async () => {
+  showModal.value = false;
+  await fetchPeople();
+  toast.add({
+    title: "Success",
+    description: selectedPerson.value?.id
+      ? "Record updated successfully"
+      : "Record created successfully",
+    color: "green",
+  });
+};
+
+// Delete person
+const deletePerson = async (id: number) => {
+  if (!confirm("Are you sure you want to delete this record?")) return;
+
+  try {
+    await del(`${endpoints.data.person(id)}`, true);
+    await fetchPeople();
+    toast.add({
+      title: "Success",
+      description: "Record deleted successfully",
+      color: "green",
+    });
+  } catch (error: any) {
+    toast.add({
+      title: "Error",
+      description: error.data?.detail || "Failed to delete record",
+      color: "red",
+    });
+  }
+};
+
+// Pagination
+const nextPage = () => {
+  skip.value += limit.value;
+  fetchPeople();
+};
+
+const previousPage = () => {
+  skip.value = Math.max(0, skip.value - limit.value);
+  fetchPeople();
+};
+
+// Initialize
+onMounted(() => {
+  fetchPeople();
+  fetchReferenceData();
+});
+</script>
+
 <template>
   <div class="min-h-screen py-8 md:px-4">
     <div class="max-w-7xl mx-auto space-y-6">
@@ -191,151 +354,3 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { useApi } from "~/composables/useApi";
-import { useEndpoints } from "~/composables/useEndpoints";
-import { useAuthStore } from "~/stores/auth";
-import DataFormModal from "~/components/data/DataFormModal.vue";
-
-interface Person {
-  id: number;
-  name: string;
-  email: string;
-  age?: number;
-  phone?: string;
-  country: string;
-  city: string;
-  department: string;
-  expertise_level?: string;
-  years_experience: number;
-  is_active: boolean;
-  skills?: string[];
-  languages?: string[];
-  tags?: string[];
-  sms_enabled?: boolean;
-  preferred_contact_method?: string;
-  [key: string]: any;
-}
-
-const { get, del } = useApi();
-const endpoints = useEndpoints();
-const authStore = useAuthStore();
-const toast = useToast();
-
-// State
-const people = ref<Person[]>([]);
-const loading = ref(false);
-const showModal = ref(false);
-const selectedPerson = ref<Person | null>(null);
-const searchQuery = ref("");
-const skip = ref(0);
-const limit = ref(10);
-const total = ref(0);
-const departments = ref<any[]>([]);
-const expertiseLevels = ref<any[]>([]);
-
-// Fetch people
-const fetchPeople = async () => {
-  loading.value = true;
-  try {
-    const response = await get<{ items: Person[]; total: number }>(
-      endpoints.data.people,
-      {
-        skip: skip.value,
-        limit: limit.value,
-        search: searchQuery.value || undefined,
-      },
-      true,
-    );
-
-    people.value = response.items || [];
-    total.value = response.total || 0;
-  } catch (error: any) {
-    toast.add({
-      title: "Error",
-      description: error.data?.detail || "Failed to load people",
-      color: "red",
-    });
-  } finally {
-    loading.value = false;
-  }
-};
-
-// Fetch reference data
-const fetchReferenceData = async () => {
-  try {
-    const [depts, levels] = await Promise.all([
-      get<any[]>(endpoints.data.departments, undefined, true),
-      get<any[]>(endpoints.data.expertiseLevels, undefined, true),
-    ]);
-    departments.value = depts || [];
-    expertiseLevels.value = levels || [];
-  } catch (error) {
-    console.error("Failed to load reference data:", error);
-  }
-};
-
-// Open create modal
-const openCreateModal = () => {
-  selectedPerson.value = null;
-  showModal.value = true;
-};
-
-// Open edit modal
-const openEditModal = (person: Person) => {
-  selectedPerson.value = person;
-  showModal.value = true;
-};
-
-// Handle modal save
-const handleSave = async () => {
-  showModal.value = false;
-  await fetchPeople();
-  toast.add({
-    title: "Success",
-    description: selectedPerson.value?.id
-      ? "Record updated successfully"
-      : "Record created successfully",
-    color: "green",
-  });
-};
-
-// Delete person
-const deletePerson = async (id: number) => {
-  if (!confirm("Are you sure you want to delete this record?")) return;
-
-  try {
-    await del(`${endpoints.data.person(id)}`, true);
-    await fetchPeople();
-    toast.add({
-      title: "Success",
-      description: "Record deleted successfully",
-      color: "green",
-    });
-  } catch (error: any) {
-    toast.add({
-      title: "Error",
-      description: error.data?.detail || "Failed to delete record",
-      color: "red",
-    });
-  }
-};
-
-// Pagination
-const nextPage = () => {
-  skip.value += limit.value;
-  fetchPeople();
-};
-
-const previousPage = () => {
-  skip.value = Math.max(0, skip.value - limit.value);
-  fetchPeople();
-};
-
-// Initialize
-onMounted(() => {
-  fetchPeople();
-  fetchReferenceData();
-});
-</script>

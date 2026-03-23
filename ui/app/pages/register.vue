@@ -84,6 +84,12 @@ const form = reactive({
   password: ''
 })
 
+useSeoMeta({
+  title: "Register",
+  ogTitle: "Register",
+  description: "Start sending texts right now",
+  ogDescription: "Start sending texts right now"
+})
 const loading = ref(false)
 const error = ref('')
 

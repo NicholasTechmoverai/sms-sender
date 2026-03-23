@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 
 from core.logger import setup_logger
-from core.meta_whatsapp import meta_whatsapp_client
+from utils.whatsapp_sender import meta_whatsapp_client
 
 logger = setup_logger(__name__)
 router = APIRouter(prefix="/whatsapp", tags=["whatsapp"])

@@ -3,6 +3,13 @@ import { definePageMeta } from "#imports";
 import type { FormError, FormSubmitEvent } from "@nuxt/ui";
 import { useAuthStore } from "../../stores/auth";
 
+useSeoMeta({
+  title: "Sms",
+  ogTitle: "Sms",
+  description: "send sms or whaatsapp texts",
+  ogDescription: "send sms or whaatsapp texts",
+})
+
 definePageMeta({
   middleware: "auth",
 });

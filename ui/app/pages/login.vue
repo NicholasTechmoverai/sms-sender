@@ -67,7 +67,12 @@
 <script setup lang="ts">
 const authStore = useAuthStore()
 const router = useRouter()
-
+useSeoMeta({
+  title: "Login",
+  ogTitle: "Login",
+  description: "Login to start working",
+  ogDescription: "Login to start working"
+})
 const form = reactive({
   username: '',
   password: ''
