@@ -42,7 +42,7 @@ class Config:
             print(f"Model paths: {MODEL_PATHS}")
             
             await Tortoise.init(config=cls.TORTOISE_ORM)
-            await Tortoise.generate_schemas()
+            # await Tortoise.generate_schemas()
             
             print(f"✓ Tortoise initialized: {Tortoise._inited}")
             print(f"✓ Available apps: {list(Tortoise.apps.keys())}")

@@ -25,7 +25,7 @@ aiomysql
 aerich
 requests
 
-jwt
+PyJWT
 bcrypt
 email-validator
 python-multipart

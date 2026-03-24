@@ -1,5 +1,5 @@
 export const useEndpoints = () => {
-    const apiBase = useAppConfig().site.apiBase ? `${useAppConfig().site.apiBase}` : 'http://localhost:8000'
+    const apiBase = useAppConfig().site.apiBase ? `${useAppConfig().site.apiBase}` : 'http://localhost:8001'
     const base = `${apiBase}/api/v1`
     return {
         auth: {
