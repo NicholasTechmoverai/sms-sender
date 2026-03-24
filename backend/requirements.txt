@@ -28,3 +28,4 @@ requests
 jwt
 bcrypt
 email-validator
+python-multipart
