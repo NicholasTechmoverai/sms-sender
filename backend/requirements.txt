@@ -24,3 +24,6 @@ slowapi
 aiomysql
 aerich
 requests
+
+jwt
+bcrypt
