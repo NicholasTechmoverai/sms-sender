@@ -27,3 +27,4 @@ requests
 
 jwt
 bcrypt
+email-validator
