@@ -8,7 +8,7 @@ export default defineAppConfig({
     icon: "",
     url: "",
     sourceLink: "https://github.com/",
-    apiBase: "http://localhost:8000"
+    apiBase: "https://sms-sender-3akz.onrender.com"
   },
   global: {
     picture: {
